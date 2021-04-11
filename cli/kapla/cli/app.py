@@ -1,19 +1,11 @@
-from pathlib import Path
 from typing import List, Optional
 
 import typer
 
-from kapla.cli.errors import PyprojectNotFoundError
-from kapla.cli.projects import Monorepo
 from kapla.cli.utils import current_directory, run
 
-from .new_repo import create_repo
 from .release_app import app as release_app
-
-try:
-    repo = Monorepo(Path.cwd())
-except PyprojectNotFoundError:
-    repo = create_repo()
+from .repo_app import repo, generator
 
 
 cli = typer.Typer(
@@ -25,15 +17,7 @@ cli = typer.Typer(
 )
 
 cli.add_typer(release_app)
-
-
-generator = typer.Typer(
-    name="new",
-    add_completion=False,
-    no_args_is_help=True,
-    invoke_without_command=False,
-    help="Create new libraries, plugins or applications.",
-)
+cli.add_typer(generator)
 
 
 @cli.command("build")
@@ -156,24 +140,3 @@ def commit() -> None:
 def config() -> None:
     """Print config to console."""
     print(repo.config)
-
-
-@generator.command("library")
-def new_library(name: str) -> None:
-    """Create a new library."""
-    repo.new_library(name)
-
-
-@generator.command("plugin")
-def new_plugin(name: str) -> None:
-    """Create a new plugin."""
-    repo.new_plugin(name)
-
-
-@generator.command("app")
-def new_app(name: str) -> None:
-    """Create a new application."""
-    repo.new_app(name)
-
-
-cli.add_typer(generator)
