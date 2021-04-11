@@ -1,0 +1,63 @@
+name: Build
+
+on:
+  create:
+    tags:
+      - v*
+  workflow_dispatch:
+
+jobs:
+  lint:
+    name: Build packages into wheel and sdist
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version:
+          - 3.8
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install poetry
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install poetry
+          python -m poetry config virtualenvs.create false
+          python -m poetry config virtualenvs.in-project false
+
+      - name: Install python package
+        run: |
+          CI=1 ./scripts/bootstrap.sh
+
+      - name: Build all packages
+        run: |
+          k build
+
+      - name: List packages
+        run: |
+          ls -lhtr dist/
+
+      - name: Write changelog update
+        run: |
+          git diff HEAD^ HEAD --unified=0 CHANGELOG.md | tail +6 | sed -e 's/^\+//' | sed 1d > CHANGES.md
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          body_path: CHANGES.md
+          files: |
+            dist/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: charbonnierg/repo
+
+      - name: Publish package to PyPI
+        if: startsWith(github.ref, 'refs/tags/')
+        run: twine upload -u __token__ -p ${{ secrets.PYPI_TOKEN }} dist/*
