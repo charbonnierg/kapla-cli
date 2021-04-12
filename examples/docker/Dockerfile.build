@@ -1,0 +1,41 @@
+ARG BASE_IMAGE
+
+FROM $BASE_IMAGE
+
+ARG POETRY_VERSION="1.1.5"
+
+ENV CACHE_DIR=/poetry
+ENV POETRY_HOME=/opt/poetry
+ENV POETRY_VERSION="$POETRY_VERSION"
+ENV PATH="/opt/poetry/bin:$PATH"
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+    curl \
+    git \
+    zip \
+    unzip \
+    xz-utils \
+    tar \
+    bzip2 \
+    build-essential \
+    ca-certificates \
+    libudev-dev \
+    automake \
+    libsndfile1 \
+    gfortran \
+    libopenblas-dev \
+    liblapack-dev \
+    cython \
+    pkg-config \
+    && curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python - \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install poetry
+RUN poetry config virtualenvs.create false
+
+# Install scikit build
+RUN mkdir -p /opt \
+    && git clone https://github.com/scikit-build/scikit-build /opt/scikit-build \
+    && cd /opt/scikit-build \
+    && python3 -m pip install .

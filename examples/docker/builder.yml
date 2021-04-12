@@ -1,0 +1,19 @@
+---
+name: python-build
+registry: quara.azurecr.io
+
+description: Python build image for QUARA project
+
+platforms:
+  - linux/amd64
+  - linux/arm64
+
+build:
+  file: Dockerfile.build
+  build_args:
+    - name: base_image
+      type: str
+      default: python:3.8
+    - name: poetry_version
+      type: str
+      default: "1.1.5"
