@@ -3,10 +3,10 @@ from typing import List, Optional
 import typer
 
 from kapla.cli.utils import current_directory, run
+from kapla.docker.buildx import app as buildx_app
 
 from .release_app import app as release_app
-from .repo_app import repo, generator
-
+from .repo_app import generator, repo
 
 cli = typer.Typer(
     name="k",
@@ -18,6 +18,7 @@ cli = typer.Typer(
 
 cli.add_typer(release_app)
 cli.add_typer(generator)
+cli.add_typer(buildx_app)
 
 
 @cli.command("build")
