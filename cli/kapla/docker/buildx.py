@@ -74,6 +74,7 @@ def build(
 
     _add_hosts = map_string_to_dict(add_hosts)
     _labels = map_string_to_dict(labels or [])
+    names = [tag for tag in tags] if tags else []
 
     is_key = True
     kwargs = {}
@@ -122,10 +123,12 @@ def build(
         _build_args.update(
             {key.upper(): value for key, value in _user_build_args.items()}
         )
+        _names = names or [image.get_name()]
 
-        logger.debug(
-            f"Building image {image.get_name()} with build arguments: {_build_args}"
-        )
+        logger.debug(f"Building image {_names[0]} with build arguments: {_build_args}")
+        if len(_names) > 1:
+            for name in _names[1:]:
+                logger.debug(f"Using additional tag: {name}")
 
         build_context = BuildContext(
             context_path=context or image.build.context,
@@ -147,7 +150,7 @@ def build(
             push=push,
             secrets=secrets,
             ssh=ssh,
-            tags=tags or image.get_name(),
+            tags=_names,
             target=target,
         )
         docker.buildx.build(**build_context.dict())
