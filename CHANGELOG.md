@@ -1,3 +1,10 @@
+### [3.0.1-rc.1](https://github.com/charbonnierg/kapla-cli/compare/v3.0.0...v3.0.1-rc.1) (2021-04-19)
+
+
+### Bug Fixes
+
+* **cli:** support path with spaces ([6e82776](https://github.com/charbonnierg/kapla-cli/commit/6e82776bf911835a5bced1a61c4f32fb4cc0df19))
+
 ## 1.0.0 (2021-04-12)
 
 ### Features
