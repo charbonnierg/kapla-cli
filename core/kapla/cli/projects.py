@@ -147,7 +147,7 @@ class Project:
     def build(self, format: Optional[str] = None) -> None:
         """Build package using `poetry build`."""
         with current_directory(self.root):
-            format_opt = f"--format {format}" if format else ""
+            format_opt = f"--format {quote(format)}" if format else ""
             logger.debug(f"Building package {self.pyproject.name}")
             run(f"poetry build {format_opt}")
 
@@ -167,16 +167,23 @@ class Project:
         """Lint package and tests using `flake8`."""
         with current_directory(self.root):
             logger.debug(f"Linting package {self.pyproject.name}")
-            run(
-                f"flake8 {' '.join(self.src)}" + (" tests/" if self.tests_found else "")
+            cmd = f"flake8 {' '.join([quote(src) for src in self.src])}" + (
+                " tests/" if self.tests_found else ""
             )
+            run(cmd)
 
     def format(self) -> None:
         """Format package and tests using `isort` and `black`."""
         with current_directory(self.root):
             logger.debug(f"Formatting package {self.pyproject.name}")
-            run(f"black {' '.join(self.src)}" + (" tests/" if self.tests_found else ""))
-            run(f"isort {' '.join(self.src)}" + (" tests/" if self.tests_found else ""))
+            run(
+                f"black {' '.join([quote(src) for src in self.src])}"
+                + (" tests/" if self.tests_found else "")
+            )
+            run(
+                f"isort {' '.join([quote(src) for src in self.src])}"
+                + (" tests/" if self.tests_found else "")
+            )
 
     def bump(self, version: str, local_prefix: Optional[str] = None) -> None:
         """Bump package version using `poetry version`."""
@@ -217,7 +224,7 @@ class Project:
     def typecheck(self) -> None:
         """Run `mypy` against package source."""
         logger.debug(f"Typechecking package {self.pyproject.name}")
-        sources = " ".join(self.src)
+        sources = " ".join([quote(src) for src in self.src])
         run(f"mypy {sources}")
 
     def export_requirements(
