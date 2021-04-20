@@ -311,11 +311,15 @@ class Project:
         self.pyproject_file.write_text(self.pyproject_content)
 
     def update_dependencies(self, values: Dict[str, Any]) -> None:
-        self._pyproject["tool"]["poetry"]["dependencies"] = {
+        new_deps: Dict[str, Any] = {
             **self.pyproject.dependencies,
             **values,
         }
-        self._pyproject["tool"]["poetry"]["dependencies"]
+        for key, value in new_deps.items():
+            if isinstance(value, Dependency):
+                new_deps[key] = value.dict(exclude_unset=True)
+        logger.debug(f"New dependencies: {new_deps}")
+        self._pyproject["tool"]["poetry"]["dependencies"] = new_deps
         self.pyproject_content = dumps(self._pyproject)
         self.pyproject_file.write_text(self.pyproject_content)
 
@@ -324,10 +328,14 @@ class Monorepo(Project):
     def __init__(self, root: Union[Path, str]) -> None:
         super().__init__(root)
         self.config = self.parse_config_from_setupcfg(self.root / "setup.cfg")
-        candidates = self.root.glob(self.config.glob)
-        self._projects: List[Project] = [Project(root)] + [
-            Project.from_pyproject(path) for path in candidates
-        ]
+        self._projects = list(self._find_projects())
+
+    def _find_projects(self) -> Iterator[Project]:
+        for pyproject_file in self.root.glob(self.config.glob):
+            if ".venv" in str(pyproject_file.resolve(True)):
+                continue
+            yield Project.from_pyproject(pyproject_file)
+        yield Project(self.root)
 
     @staticmethod
     def parse_config_from_setupcfg(path: pathlib.Path) -> RepoConfig:
@@ -413,14 +421,16 @@ class Monorepo(Project):
             for project in self.get_packages(packages):
                 project.test(markers=markers, exprs=exprs)
 
-    def bump_packages(self, version: str) -> None:
-        bumped = []
-        for project in self.get_packages():
+    def bump_packages(
+        self, version: str, packages: List[str] = [], skip: List[str] = []
+    ) -> None:
+        for project in self.get_packages(packages):
             for dep in project.private_dependencies:
-                if dep.pyproject.name not in bumped:
-                    dep.bump(version)
-                    bumped.append(dep.pyproject.name)
-            if project.pyproject.name not in bumped:
+                if dep in skip:
+                    continue
+                self.bump_packages(version, [dep.pyproject.name], skip=skip)
+                skip.append(dep.pyproject.name)
+            if project.pyproject.name not in skip:
                 project.bump(version)
 
     def lint_packages(self, packages: List[str] = []) -> None:

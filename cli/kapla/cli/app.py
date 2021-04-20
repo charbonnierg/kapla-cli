@@ -1,5 +1,6 @@
 from typing import List, Optional
 
+import pkg_resources
 import typer
 
 from kapla.cli.utils import current_directory, run
@@ -7,6 +8,11 @@ from kapla.docker.buildx import app as buildx_app
 
 from .release_app import app as release_app
 from .repo_app import generator, repo
+
+
+def get_version(package_name: str) -> str:
+    return pkg_resources.get_distribution(package_name).version
+
 
 cli = typer.Typer(
     name="k",
@@ -143,3 +149,27 @@ def commit() -> None:
 def config() -> None:
     """Print config to console."""
     print(repo.config)
+
+
+def version_callback(value: bool) -> None:
+    if value:
+        version = get_version("kapla-cli-core")
+        typer.echo(f"{version}")
+        raise typer.Exit(0)
+
+
+@cli.callback()
+def main(
+    version: Optional[bool] = typer.Option(
+        None,
+        "--version",
+        help="Print the version and exit.",
+        callback=version_callback,
+        is_eager=True,
+    ),
+) -> None:
+    """
+    K Command Line Application
+    """
+    if version:
+        raise typer.Exit(0)
