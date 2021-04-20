@@ -1,3 +1,10 @@
+### [3.0.3](https://github.com/charbonnierg/kapla-cli/compare/v3.0.2...v3.0.3) (2021-04-20)
+
+
+### Bug Fixes
+
+* indicate correct version when bumping ([821568c](https://github.com/charbonnierg/kapla-cli/commit/821568c79a4c4faa652aef49dd3fc7dfcbefe350))
+
 ### [3.0.3-rc.1](https://github.com/charbonnierg/kapla-cli/compare/v3.0.2...v3.0.3-rc.1) (2021-04-20)
 
 
