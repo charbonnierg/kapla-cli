@@ -331,11 +331,11 @@ class Monorepo(Project):
         self._projects = list(self._find_projects())
 
     def _find_projects(self) -> Iterator[Project]:
+        yield Project(self.root)
         for pyproject_file in self.root.glob(self.config.glob):
             if ".venv" in str(pyproject_file.resolve(True)):
                 continue
             yield Project.from_pyproject(pyproject_file)
-        yield Project(self.root)
 
     @staticmethod
     def parse_config_from_setupcfg(path: pathlib.Path) -> RepoConfig:
