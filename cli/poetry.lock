@@ -301,7 +301,7 @@ i18n = ["Babel (>=0.8)"]
 
 [[package]]
 name = "kapla-cli-core"
-version = "3.0.3-rc.1"
+version = "3.0.3"
 description = ""
 category = "main"
 optional = false
@@ -870,7 +870,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pyt
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "f42b9467f47e015103c945a3ed60f342eaa1cb3fd47757f05c93d608f106f08a"
+content-hash = "737cf3b5442c1fc2f99e765c4bf4f90df9fa4eb0386c50dee8c173942b44e36a"
 
 [metadata.files]
 appdirs = [

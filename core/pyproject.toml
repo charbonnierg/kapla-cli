@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "kapla-cli-core"
-version = "3.0.3-rc.1"
+version = "3.0.3"
 description = ""
 authors = ["Guillaume Charbonnier <guillaume.charbonnier@araymond.com>"]
 packages = [{ include = "kapla" }]
