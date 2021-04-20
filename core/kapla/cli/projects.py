@@ -201,10 +201,11 @@ class Project:
             if deps_to_bump:
                 logger.debug(f"Bumping relative dependencies: {deps_to_bump}")
                 self.update_dependencies(deps_to_bump)
+            old_version = self.pyproject.version
             self.set_version(version)
             run("poetry lock --no-update")
             logger.info(
-                f"Successfully bumped package {self.pyproject.name} from version {version} to {version}"
+                f"Successfully bumped package {self.pyproject.name} from version {old_version} to {version}"
             )
 
     def clean(self, no_dist: bool = False) -> None:
