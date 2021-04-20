@@ -105,6 +105,7 @@ class Pyproject(BaseModel):
 
 class RepoConfig(BaseSettings):
     prefix: Optional[str] = None
+    glob: str = "**/*[!.venv]*/pyproject.toml"
 
     class Config:
         env_prefix = "repo_"

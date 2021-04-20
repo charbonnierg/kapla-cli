@@ -1,13 +1,12 @@
 from __future__ import annotations
 
 import pathlib
-import re
 import shutil
 from configparser import ConfigParser
 from itertools import chain
 from pathlib import Path
 from shlex import quote
-from typing import Dict, Iterator, List, Optional, Union
+from typing import Any, Dict, Iterator, List, Optional, Union
 
 from loguru import logger
 from stdlib_list import stdlib_list
@@ -33,7 +32,7 @@ class Project:
             * ValidationError: When a pyproject.toml is not valid.
         """
         # Store the canonical path ('.' and '..' are resolved and variables are expanded)
-        self.root = Path(root).resolve().absolute()
+        self.root = Path(root).resolve(True)
         # Ensure path exists
         if not self.root.exists():
             raise DirectoryNotFoundError(f"Directory {self.root} does not exist")
@@ -49,6 +48,11 @@ class Project:
 
     def __repr__(self) -> str:
         return f"Project(name={self.pyproject.name}, root={self.root})"
+
+    # def glob(self, expr: str, ignore: Sequence[Union[str, Path]]):
+    #     generator = self.root.glob(expr)
+    #     for path in generator:
+    #         if path
 
     @property
     def tests_found(self) -> bool:
@@ -66,11 +70,11 @@ class Project:
                 return []
         for pkg in self.pyproject.packages:
             if isinstance(pkg, str):
-                default = Path(self.root / pkg)
+                default = Path(self.root / pkg).resolve(True)
                 if default.exists():
                     sources.append(default)
                 else:
-                    default = Path(self.root / "src" / pkg)
+                    default = Path(self.root / "src" / pkg).resolve(True)
                     if default.exists():
                         sources.append(default)
                 continue
@@ -107,7 +111,7 @@ class Project:
                         continue
                     # If the path attribute does exist, then this is a private dependency
                     if path:
-                        dependencies.append(Project(path))
+                        dependencies.append(Project((self.root / path).resolve(True)))
         return dependencies
 
     @property
@@ -133,7 +137,7 @@ class Project:
             * PyprojectNotFoundError: When a pyproject.toml cannot be found in project root directory.
             * ValidationError: When a pyproject.toml is not valid.
         """
-        return cls(Path(pyproject).parent)
+        return cls(Path(pyproject).parent.resolve(True))
 
     def install(self, extras: List[str] = [], skip: List[str] = []) -> None:
         """Install package using `poetry install`."""
@@ -185,19 +189,23 @@ class Project:
                 + (" tests/" if self.tests_found else "")
             )
 
-    def bump(self, version: str, local_prefix: Optional[str] = None) -> None:
+    def bump(self, version: str) -> None:
         """Bump package version using `poetry version`."""
+        logger.debug(
+            f"Bumping package {self.pyproject.name} from version {version} to {version}"
+        )
         with current_directory(self.root):
-            logger.debug(f"Bumping package {self.pyproject.name} to version {version}")
+            deps_to_bump = {
+                dep.pyproject.name: f"^{version}" for dep in self.private_dependencies
+            }
+            if deps_to_bump:
+                logger.debug(f"Bumping relative dependencies: {deps_to_bump}")
+                self.update_dependencies(deps_to_bump)
             self.set_version(version)
-            if local_prefix:
-                pattern = rf'({local_prefix}-[a-zA-Z0-9-_]*)\s?=\s?(.?)"\^?(.*)"(.*)'
-                regexp = re.compile(pattern, re.MULTILINE)
-                self.pyproject_content = regexp.sub(
-                    f'\\1 = \\2"^{version}"\\4', self.pyproject_content
-                )
-                self.pyproject_file.write_text(self.pyproject_content)
             run("poetry lock --no-update")
+            logger.info(
+                f"Successfully bumped package {self.pyproject.name} from version {version} to {version}"
+            )
 
     def clean(self, no_dist: bool = False) -> None:
         """Clean a package dist directory."""
@@ -269,7 +277,7 @@ class Project:
         with current_directory(export):
             run(f"pip download -r {requirements}")
             requirements.unlink()
-        dist = Path("dist")
+        dist = Path("dist").resolve(True)
         dist.mkdir(exist_ok=True, parents=True)
         out = dist / f"{self.pyproject.name}-{self.pyproject.version}"
         shutil.make_archive(
@@ -301,17 +309,24 @@ class Project:
         self.pyproject_content = dumps(self._pyproject)
         self.pyproject_file.write_text(self.pyproject_content)
 
+    def update_dependencies(self, values: Dict[str, Any]) -> None:
+        self._pyproject["tool"]["poetry"]["dependencies"] = {
+            **self.pyproject.dependencies,
+            **values,
+        }
+        self._pyproject["tool"]["poetry"]["dependencies"]
+        self.pyproject_content = dumps(self._pyproject)
+        self.pyproject_file.write_text(self.pyproject_content)
+
 
 class Monorepo(Project):
     def __init__(self, root: Union[Path, str]) -> None:
         super().__init__(root)
-        self._projects: List[Project] = [
-            Project.from_pyproject(path)
-            for path in chain(
-                self.root.glob("**/pyproject.toml"),
-            )
-        ]
         self.config = self.parse_config_from_setupcfg(self.root / "setup.cfg")
+        candidates = self.root.glob(self.config.glob)
+        self._projects: List[Project] = [Project(root)] + [
+            Project.from_pyproject(path) for path in candidates
+        ]
 
     @staticmethod
     def parse_config_from_setupcfg(path: pathlib.Path) -> RepoConfig:
@@ -402,10 +417,10 @@ class Monorepo(Project):
         for project in self.get_packages():
             for dep in project.private_dependencies:
                 if dep.pyproject.name not in bumped:
-                    dep.bump(version, self.config.prefix)
+                    dep.bump(version)
                     bumped.append(dep.pyproject.name)
             if project.pyproject.name not in bumped:
-                project.bump(version, self.config.prefix)
+                project.bump(version)
 
     def lint_packages(self, packages: List[str] = []) -> None:
         for project in self.get_packages(packages):
@@ -439,6 +454,8 @@ class Monorepo(Project):
         self._new_project(name, "applications")
 
     def _new_project(self, name: str, folder: str) -> None:
+        # Simply replace name for the moment
+        name = name.replace("-", "_").replace(" ", "_")
         # Create project directory
         project_root = self.root / folder / name
         project_root.mkdir(parents=True, exist_ok=True)

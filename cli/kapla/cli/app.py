@@ -89,10 +89,12 @@ def format(
 @cli.command("install")
 def install(
     package: Optional[List[str]] = typer.Argument(default=None),
+    skip: Optional[List[str]] = typer.Option(None, "--skip", "-s"),
 ) -> None:
     """Install all packages in editable mode and development dependencies."""
     packages = list(package or [])
-    repo.install_packages(packages)
+    skip = list(skip or [])
+    repo.install_packages(packages, skip=skip)
 
 
 @cli.command("clean")
