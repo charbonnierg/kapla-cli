@@ -1,3 +1,10 @@
+### [3.0.2](https://github.com/charbonnierg/kapla-cli/compare/v3.0.1...v3.0.2) (2021-04-20)
+
+
+### Bug Fixes
+
+* support spaces and dashes in project name, ignore env in glob expr ([26780ca](https://github.com/charbonnierg/kapla-cli/commit/26780caad2ed82765576410cbb39324d990ea5f3))
+
 ### [3.0.2-rc.1](https://github.com/charbonnierg/kapla-cli/compare/v3.0.1...v3.0.2-rc.1) (2021-04-20)
 
 
