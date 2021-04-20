@@ -1,3 +1,10 @@
+### [3.0.4](https://github.com/charbonnierg/kapla-cli/compare/v3.0.3...v3.0.4) (2021-04-20)
+
+
+### Bug Fixes
+
+* support long format dependencies when bumping versions ([4fc56d2](https://github.com/charbonnierg/kapla-cli/commit/4fc56d2974afac00b7309baf2885980fc3bae258))
+
 ## [3.0.3](https://github.com/charbonnierg/kapla-cli/compare/v3.0.2...v3.0.3) (2021-04-20)
 
 ### Bug Fixes
