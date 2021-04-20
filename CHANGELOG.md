@@ -1,51 +1,20 @@
-### [3.0.4-rc.1](https://github.com/charbonnierg/kapla-cli/compare/v3.0.3...v3.0.4-rc.1) (2021-04-20)
-
-
-### Bug Fixes
-
-* support long format dependencies when bumping versions ([4fc56d2](https://github.com/charbonnierg/kapla-cli/commit/4fc56d2974afac00b7309baf2885980fc3bae258))
-
-### [3.0.3](https://github.com/charbonnierg/kapla-cli/compare/v3.0.2...v3.0.3) (2021-04-20)
-
+## [3.0.3](https://github.com/charbonnierg/kapla-cli/compare/v3.0.2...v3.0.3) (2021-04-20)
 
 ### Bug Fixes
 
-* indicate correct version when bumping ([821568c](https://github.com/charbonnierg/kapla-cli/commit/821568c79a4c4faa652aef49dd3fc7dfcbefe350))
+- indicate correct version when bumping ([821568c](https://github.com/charbonnierg/kapla-cli/commit/821568c79a4c4faa652aef49dd3fc7dfcbefe350))
 
-### [3.0.3-rc.1](https://github.com/charbonnierg/kapla-cli/compare/v3.0.2...v3.0.3-rc.1) (2021-04-20)
-
-
-### Bug Fixes
-
-* indicate correct version when bumping ([821568c](https://github.com/charbonnierg/kapla-cli/commit/821568c79a4c4faa652aef49dd3fc7dfcbefe350))
-
-### [3.0.2](https://github.com/charbonnierg/kapla-cli/compare/v3.0.1...v3.0.2) (2021-04-20)
-
+## [3.0.2](https://github.com/charbonnierg/kapla-cli/compare/v3.0.1...v3.0.2) (2021-04-20)
 
 ### Bug Fixes
 
-* support spaces and dashes in project name, ignore env in glob expr ([26780ca](https://github.com/charbonnierg/kapla-cli/commit/26780caad2ed82765576410cbb39324d990ea5f3))
+- support spaces and dashes in project name, ignore env in glob expr ([26780ca](https://github.com/charbonnierg/kapla-cli/commit/26780caad2ed82765576410cbb39324d990ea5f3))
 
-### [3.0.2-rc.1](https://github.com/charbonnierg/kapla-cli/compare/v3.0.1...v3.0.2-rc.1) (2021-04-20)
-
-
-### Bug Fixes
-
-* support spaces and dashes in project name, ignore env in glob expr ([26780ca](https://github.com/charbonnierg/kapla-cli/commit/26780caad2ed82765576410cbb39324d990ea5f3))
-
-### [3.0.1](https://github.com/charbonnierg/kapla-cli/compare/v3.0.0...v3.0.1) (2021-04-19)
-
+## [3.0.1](https://github.com/charbonnierg/kapla-cli/compare/v3.0.0...v3.0.1) (2021-04-19)
 
 ### Bug Fixes
 
-* **cli:** support path with spaces ([b5baf8a](https://github.com/charbonnierg/kapla-cli/commit/b5baf8ad27c7c4b4ffa6db245a26eb8fa1ca4f4d))
-
-### [3.0.1-rc.1](https://github.com/charbonnierg/kapla-cli/compare/v3.0.0...v3.0.1-rc.1) (2021-04-19)
-
-
-### Bug Fixes
-
-* **cli:** support path with spaces ([6e82776](https://github.com/charbonnierg/kapla-cli/commit/6e82776bf911835a5bced1a61c4f32fb4cc0df19))
+- **cli:** support path with spaces ([b5baf8a](https://github.com/charbonnierg/kapla-cli/commit/b5baf8ad27c7c4b4ffa6db245a26eb8fa1ca4f4d))
 
 ## 1.0.0 (2021-04-12)
 
