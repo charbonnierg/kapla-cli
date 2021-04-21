@@ -1,3 +1,10 @@
+## [3.1.0](https://github.com/charbonnierg/kapla-cli/compare/v3.0.4...v3.1.0) (2021-04-21)
+
+
+### Features
+
+* **cli:** refactored cli and introduced k profile commands ([427d7ae](https://github.com/charbonnierg/kapla-cli/commit/427d7aec9f59238fbe1b4b3406ad4f84235bc60b))
+
 ## [3.1.0-rc.1](https://github.com/charbonnierg/kapla-cli/compare/v3.0.4...v3.1.0-rc.1) (2021-04-21)
 
 
