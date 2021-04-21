@@ -6,11 +6,11 @@ from typing import List, Optional, Union
 from loguru import logger
 from pydantic.error_wrappers import ValidationError
 from python_on_whales import docker
-from typer import Context, Typer, echo
+from typer import Argument, Context, Option, Typer
 
+from kapla.cli.console import console, style_str
 from kapla.cli.utils import map_string_to_dict
-
-from .datatypes import BuildContext, Catalog, Image
+from kapla.docker.datatypes import BuildContext, Catalog, Image
 
 app = Typer(
     name="builder",
@@ -25,30 +25,83 @@ app = Typer(
 )
 def build(
     ctx: Context,
-    builder_file: Optional[str] = None,
+    name: Optional[str] = Argument(None, help="Name of images to build"),
+    builder_file: Optional[str] = Option(
+        None,
+        "--builder-file",
+        "-b",
+        help="builder.yml file to use. By default files are searched accross repo",
+    ),
     *,
-    context: Optional[Path] = None,
-    add_hosts: Optional[List[str]] = None,
+    context: Optional[Path] = Option(
+        None, "--context", "-c", help="Docker context to consider when performing build"
+    ),
+    file: Optional[Path] = Option(
+        None,
+        "--dockerfile",
+        "--file",
+        "-f",
+        help="Custom Dockerfile to use when building image",
+    ),
+    tags: Optional[List[str]] = Option(
+        None, "-t", "--tags", help="Custom tags to give to produced image"
+    ),
+    labels: Optional[List[str]] = Option(
+        None, "-l", "--label", help="Additional labels to give to the produced image"
+    ),
+    platforms: Optional[List[str]] = Option(
+        None, "-p", "--platform", help="Platforms to build the image for"
+    ),
+    add_hosts: Optional[List[str]] = Option(
+        None,
+        "-h",
+        "--add-host",
+        help="Add known hosts entries into the generated docker image",
+    ),
+    push: bool = Option(False, "--push", help="Push the image to registry after build"),
+    load: bool = Option(
+        False, "--load", help="Load the image into local docker engine after build"
+    ),
+    dump: bool = Option(
+        False,
+        "--dump",
+        help="Dump the image filesystem into the current directory after build",
+    ),
+    build_args: Optional[List[str]] = Option(
+        None, "--build-args", help="Additional build arguments"
+    ),
+    builder: Optional[str] = Option(
+        None,
+        "--builder",
+        help="Custom builder to use (see --builder option for 'docker buildx build' command)",
+    ),
+    cache: bool = Option(
+        True, "--cache", help="Cache generated layers to speed up build"
+    ),
+    cache_from: Optional[str] = Option(
+        None,
+        "--cache-from",
+        help="Reuse cache from given location. Can be a remote docker image",
+    ),
+    cache_to: Optional[str] = Option(
+        None,
+        "--cache-to",
+        help="Store intermediate layer and produced cache into given destination",
+    ),
+    network: Optional[str] = Option(
+        None, "--network", help="Use a specific network mode during build"
+    ),
+    output: Optional[str] = Option(
+        None, "--output", help="Custom output for 'docker buildx build' command"
+    ),
+    progress: str = Option("auto", "--progress", help="Progress display mode"),
+    pull: bool = Option(False, "--pull", help="Always pull images before build"),
+    secrets: Optional[List[str]] = Option(
+        None, "--secret", help="Secrets to mount during build"
+    ),
+    # Don't know what those two options are for
     allow: Optional[List[str]] = None,
-    build_args: Optional[List[str]] = None,
-    builder: Optional[str] = None,
-    cache: bool = True,
-    cache_from: Optional[str] = None,
-    cache_to: Optional[str] = None,
-    dump: bool = False,
-    file: Optional[Path] = None,
-    labels: Optional[List[str]] = None,
-    load: bool = False,
-    name: Optional[str] = None,
-    network: Optional[str] = None,
-    output: Optional[str] = None,
-    platforms: Optional[List[str]] = None,
-    progress: str = "auto",
-    pull: bool = False,
-    push: bool = False,
-    secrets: Optional[List[str]] = None,
     ssh: Optional[str] = None,
-    tags: Optional[List[str]] = None,
     target: Optional[str] = None,
 ) -> None:
     """Build a docker image."""
@@ -56,20 +109,23 @@ def build(
         try:
             images = [Image.from_file(builder_file)]
         except ValidationError as err:
-            echo(err, err=True)
+            console.print(err, style="red")
             exit(1)
     elif name:
         catalog = Catalog.from_directory(Path.cwd())
         try:
             images = [next(image for image in catalog.images if image.name == name)]
         except StopIteration:
-            echo(f"Build config for image {name} does not exist", err=True)
+            console.print(
+                f"Build config for image {style_str(name, 'bold')} does not exist",
+                style="red",
+            )
             exit(1)
     else:
         try:
             images = Catalog.from_directory(Path.cwd()).images
         except ValidationError as err:
-            echo(err, err=True)
+            console.print(err, style="red")
             exit(1)
 
     _add_hosts = map_string_to_dict(add_hosts)

@@ -24,8 +24,7 @@ kapla-cli-core = { path = "../core/" }
 colorama = "^0.4.4"
 
 [tool.poetry.scripts]
-repo = "kapla.cli.app:cli"
-k = "kapla.cli.app:cli"
+k = "kapla.cli.app:app"
 
 
 [build-system]

@@ -2,11 +2,12 @@ import os
 import pathlib
 import shutil
 from contextlib import contextmanager
+from shlex import quote
 from typing import Iterator
 
 import typer
-from loguru import logger
 
+from kapla.cli.console import console, style_str
 from kapla.cli.utils import run
 
 RC_BRANCH_NAME = os.environ.get("RC_BRANCH_NAME", "next")
@@ -15,14 +16,26 @@ STABLE_BRANCH_NAME = os.environ.get("STABLE_BRANCH_NAME", "stable")
 
 @contextmanager
 def ensure_config() -> Iterator[pathlib.Path]:
+    """A context manager to make sure a semantic release config is present in the directory."""
+    # The configuration must be located in the root directory of the project
     config = pathlib.Path.cwd() / "release.config.js"
+    is_default = False
+    # If it does not exist we copy the default config
     if not config.exists():
-        shutil.copy2(pathlib.Path(__file__).parent / "release.config.js", config)
+        is_default = True
+        shutil.copy2(
+            pathlib.Path(__file__).parent.parent / "defaults" / "release.config.js",
+            config,
+        )
+    # We print the config as debug
     try:
-        logger.debug(f"Using config: {config.read_text()}")
+        console.print("Using config: ", config.read_text())
+        # Yield the config so that it is returned by the context manager
         yield config
     finally:
-        config.unlink(missing_ok=True)
+        # Only remove the file is the default
+        if is_default:
+            config.unlink(missing_ok=True)
 
 
 app = typer.Typer(
@@ -33,10 +46,14 @@ app = typer.Typer(
     help="Python monorepo release toolkit",
 )
 
+BRANCH = typer.Option(..., help="git branch from which release should be performed")
+VERSION = typer.Option(..., help="version number to bump to")
+
 
 @app.command("prepare")
 def prepare_release(
-    version: str = typer.Option(...), branch: str = typer.Option(...)
+    version: str = VERSION,
+    branch: str = BRANCH,
 ) -> None:
     """Prepare the release."""
     # Make sure to start from given branch
@@ -50,7 +67,7 @@ def prepare_release(
 
 
 @app.command("publish")
-def publish_release(branch: str = typer.Option(...)) -> None:
+def publish_release(branch: str = BRANCH) -> None:
     """Perform the release."""
     # Checkout target branch
     run(f"git checkout {branch}")
@@ -59,7 +76,7 @@ def publish_release(branch: str = typer.Option(...)) -> None:
 
 
 @app.command("success")
-def on_success(branch: str = typer.Option(...)) -> None:
+def on_success(branch: str = BRANCH) -> None:
     """Merge changes back into next on success on stable releases only."""
     if branch == STABLE_BRANCH_NAME:
         # Checkout release candidate branch ("next" by default)
@@ -89,7 +106,11 @@ def do_release() -> None:
 
 
 @app.command("install")
-def install_deps(become: bool = False) -> None:
+def install_deps(
+    become: bool = typer.Option(
+        False, "-b", "--become", help="perform installation as root user using sudo"
+    )
+) -> None:
     """Install release dependencies"""
     deps = [
         "semantic-release",
@@ -101,5 +122,5 @@ def install_deps(become: bool = False) -> None:
     cmd = "npm i -g " + " ".join(deps)
     if become:
         cmd = "sudo " + cmd
-    logger.debug(f"Running command: {cmd}")
+    console.print(f"Running command: {quote(style_str(cmd, 'bold'))}")
     run(cmd)

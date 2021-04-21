@@ -3,7 +3,7 @@ from typing import Callable, Generator
 import pytest
 from typer.testing import Result
 
-from kapla.cli.app import cli
+from kapla.cli.app import app
 
 K = Callable[..., Result]
 
@@ -15,6 +15,6 @@ def k() -> Generator[K, None, None]:
     runner = CliRunner()
 
     def func(*args: str) -> Result:
-        return runner.invoke(cli, args)
+        return runner.invoke(app, args)
 
     yield func

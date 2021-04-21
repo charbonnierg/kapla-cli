@@ -8,10 +8,10 @@ from pathlib import Path
 from shlex import quote
 from typing import Any, Dict, Iterator, List, Optional, Union
 
-from loguru import logger
 from stdlib_list import stdlib_list
 from tomlkit import dumps, parse
 
+from .console import console, style_str
 from .datatypes import Dependency, Pyproject, RepoConfig
 from .errors import DirectoryNotFoundError, PackageNotFoundError, PyprojectNotFoundError
 from .utils import current_directory, run
@@ -144,15 +144,27 @@ class Project:
         if self.pyproject.name in skip:
             return
         with current_directory(self.root):
-            logger.debug(f"Installing project {self.pyproject.name}")
+            console.print(
+                f"Installing project {style_str(self.pyproject.name, 'bold blue')}"
+            )
             extras_opts = " ".join(["-E " + quote(extra) for extra in extras])
-            run(f"poetry install {extras_opts}")
+            try:
+                run(f"poetry install {extras_opts}")
+            except Exception:
+                console.print(
+                    f"Failed to install {self.pyproject.name} from {style_str(self.root, 'red')}",
+                    style="red",
+                )
+            console.print(
+                f"Successfully installed {self.pyproject.name} from {style_str(self.root, 'green')}",
+                style="green",
+            )
 
     def build(self, format: Optional[str] = None) -> None:
         """Build package using `poetry build`."""
         with current_directory(self.root):
             format_opt = f"--format {quote(format)}" if format else ""
-            logger.debug(f"Building package {self.pyproject.name}")
+            console.print(f"Building package {style_str(self.pyproject.name, 'blue')}")
             run(f"poetry build {format_opt}")
 
     def test(
@@ -164,48 +176,66 @@ class Project:
         cov_opts = " ".join((f"--cov {quote(src)}" for src in set(self.src + add_src)))
         with current_directory(self.root):
             cmd = f"pytest {cov_opts} {expr_opts} {marker_opts}"
-            logger.debug(f"Testing package {self.pyproject.name} with command: {cmd}")
+            console.print(
+                f"[bold blue]Testing[/bold blue] package {style_str(self.pyproject.name, 'blue')} with command: {style_str(cmd, 'blue')}"
+            )
             run(cmd)
 
     def lint(self) -> None:
         """Lint package and tests using `flake8`."""
+        cmd = f"flake8 {' '.join([quote(src) for src in self.src])}" + (
+            " tests/" if self.tests_found else ""
+        )
         with current_directory(self.root):
-            logger.debug(f"Linting package {self.pyproject.name}")
-            cmd = f"flake8 {' '.join([quote(src) for src in self.src])}" + (
-                " tests/" if self.tests_found else ""
+            console.print(
+                f"[bold blue]Linting[/bold blue] package {style_str(self.pyproject.name, 'blue')} with command: {style_str(cmd, 'blue')}"
             )
             run(cmd)
 
     def format(self) -> None:
         """Format package and tests using `isort` and `black`."""
+        src_dirs = " ".join([quote(src) for src in self.src])
+        test_dirs = " tests/" if self.tests_found else ""
+        black_cmd = f"black {src_dirs}" + test_dirs
+        isort_cmd = f"isort {src_dirs}" + test_dirs
         with current_directory(self.root):
-            logger.debug(f"Formatting package {self.pyproject.name}")
-            run(
-                f"black {' '.join([quote(src) for src in self.src])}"
-                + (" tests/" if self.tests_found else "")
+            console.print(
+                f"[bold blue]Formatting[/bold blue] package {style_str(self.pyproject.name, 'blue')} with command: {style_str(black_cmd, 'blue')}"
             )
-            run(
-                f"isort {' '.join([quote(src) for src in self.src])}"
-                + (" tests/" if self.tests_found else "")
+            run(black_cmd)
+            console.print(
+                f"[bold blue]Sorting[/bold blue] imports for package {style_str(self.pyproject.name, 'blue')} with command: {style_str(isort_cmd, 'blue')}"
             )
+            run(isort_cmd)
+
+    def typecheck(self) -> None:
+        """Run `mypy` against package source."""
+        sources = " ".join([quote(src) for src in self.src])
+        cmd = f"mypy {sources}"
+        console.print(
+            f"[bold blue]Typechecking[/bold blue] package {style_str(self.pyproject.name, 'blue')} with command: {style_str(cmd, 'blue')}"
+        )
+        run(cmd)
 
     def bump(self, version: str) -> None:
         """Bump package version using `poetry version`."""
-        logger.debug(
-            f"Bumping package {self.pyproject.name} from version {version} to {version}"
+        console.print(
+            f"[bold blue]Bumping[/bold blue] package {style_str(self.pyproject.name, 'blue')} from version {style_str(self.pyproject.version, 'bold blue')} to {style_str(version, 'bold blue')}"
         )
         with current_directory(self.root):
             deps_to_bump = {
                 dep.pyproject.name: f"^{version}" for dep in self.private_dependencies
             }
             if deps_to_bump:
-                logger.debug(f"Bumping relative dependencies: {deps_to_bump}")
+                console.print(
+                    f"[blue]Bumping relative dependencies[/blue]: {list(deps_to_bump)}"
+                )
                 self.update_dependencies(deps_to_bump)
-            old_version = self.pyproject.version
             self.set_version(version)
             run("poetry lock --no-update")
-            logger.info(
-                f"Successfully bumped package {self.pyproject.name} from version {old_version} to {version}"
+            console.print(
+                f"Successfully bumped package {self.pyproject.name}",
+                style="green",
             )
 
     def clean(self, no_dist: bool = False) -> None:
@@ -227,14 +257,8 @@ class Project:
     def update(self) -> None:
         """Update package dependencies using `poetry udpate`."""
         with current_directory(self.root):
-            logger.debug(f"Updating package {self.pyproject.name}")
+            console.print(f"Updating package {self.pyproject.name}")
             run("poetry update")
-
-    def typecheck(self) -> None:
-        """Run `mypy` against package source."""
-        logger.debug(f"Typechecking package {self.pyproject.name}")
-        sources = " ".join([quote(src) for src in self.src])
-        run(f"mypy {sources}")
 
     def export_requirements(
         self, requirements: Union[str, Path] = "requirements.txt", mode: str = ">"
@@ -248,7 +272,7 @@ class Project:
 
     def export(self, clean: bool = True) -> None:
         """Export packages and its dependencies to directory."""
-        logger.debug(f"Exporting package {self.pyproject.name} and its dependencies")
+        console.print(f"Exporting package {self.pyproject.name} and its dependencies")
         if clean:
             self.clean()
         export = self.root / "export"
@@ -318,7 +342,6 @@ class Project:
         for key, value in new_deps.items():
             if isinstance(value, Dependency):
                 new_deps[key] = value.dict(exclude_unset=True)
-        logger.debug(f"New dependencies: {new_deps}")
         self._pyproject["tool"]["poetry"]["dependencies"] = new_deps
         self.pyproject_content = dumps(self._pyproject)
         self.pyproject_file.write_text(self.pyproject_content)
@@ -488,9 +511,10 @@ class Monorepo(Project):
         else:
             sources_dir = project_root / name.replace("-", "_")
         if sources_dir.name in stdlib_list():
-            logger.warning(
-                f"Generated module with name {sources_dir}. "
-                f"The {sources_dir} module already exists in the standard library."
+            console.print(
+                f"Warning: Generated module with name {sources_dir}. "
+                f"The {sources_dir} module already exists in the standard library.",
+                style="yellow",
             )
         # Declare variable type
         to_include: Optional[str]
