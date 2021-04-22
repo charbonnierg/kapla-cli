@@ -312,6 +312,15 @@ class Project:
         )
         shutil.rmtree(export)
 
+    def add_dep(self, name: str, *, dev: bool = False) -> None:
+        with current_directory(self.root):
+            dev_opt = "--dev" if dev else ""
+            cmd = f"poetry add {name} {dev_opt}".strip()
+            console.print(
+                f"[blue]Installing[/blue] dependency [bold blue]{name}[/bold blue] for project [bold blue]{self.pyproject.name}[/bold blue] with command [blue]{quote(cmd)}[/blue]"
+            )
+            run(cmd)
+
     def set_version(self, value: str) -> None:
         self._pyproject["tool"]["poetry"]["version"] = value
         self.pyproject = Pyproject.construct(**self._pyproject["tool"]["poetry"])
@@ -477,6 +486,12 @@ class Monorepo(Project):
     def update_packages(self, packages: List[str] = []) -> None:
         for project in self.get_packages(packages):
             project.update()
+
+    def add_dependency(
+        self, name: str, packages: List[str] = [], dev: bool = False
+    ) -> None:
+        for package in self.get_packages(packages):
+            package.add_dep(name, dev=dev)
 
     def new_library(self, name: str) -> None:
         self._new_project(name, "libraries")
