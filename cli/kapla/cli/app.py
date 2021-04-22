@@ -7,6 +7,7 @@ from kapla.cli.console import console
 
 from .commands.base import app
 from .commands.buildx import app as k_buildx_commands
+from .commands.deps import app as k_dep_commands
 from .commands.new import app as k_new_commands
 from .commands.profile import app as k_profile_commands
 from .commands.release import app as k_release_commands
@@ -20,6 +21,7 @@ app.add_typer(k_release_commands)
 app.add_typer(k_new_commands)
 app.add_typer(k_profile_commands)
 app.add_typer(k_buildx_commands)
+app.add_typer(k_dep_commands)
 
 
 def _callback(value: bool) -> None:

@@ -10,8 +10,13 @@ def test_repo_name(kapla_cli_repo: Monorepo) -> None:
 
 
 def test_repo_package(kapla_cli_repo: Monorepo) -> None:
-    assert [project.pyproject.name for project in kapla_cli_repo.get_packages()] == [
-        "kapla-cli-monorepo",
-        "kapla-cli",
-        "kapla-cli-core",
-    ]
+    names = [project.pyproject.name for project in kapla_cli_repo.get_packages()]
+    assert list(sorted(names)) == list(
+        sorted(
+            [
+                "kapla-cli-monorepo",
+                "kapla-cli",
+                "kapla-cli-core",
+            ]
+        )
+    )
