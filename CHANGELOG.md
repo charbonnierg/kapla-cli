@@ -1,3 +1,10 @@
+## [3.2.0-rc.1](https://github.com/charbonnierg/kapla-cli/compare/v3.1.0...v3.2.0-rc.1) (2021-04-22)
+
+
+### Features
+
+* added k dep command to install same dependency in several projects quickly ([bfa2518](https://github.com/charbonnierg/kapla-cli/commit/bfa2518261ed1a4d24fee1b815537be9c6df18ac))
+
 ## [3.1.0](https://github.com/charbonnierg/kapla-cli/compare/v3.0.4...v3.1.0) (2021-04-21)
 
 
