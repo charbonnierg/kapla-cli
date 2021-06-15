@@ -1,3 +1,16 @@
+## [3.2.0](https://github.com/charbonnierg/kapla-cli/compare/v3.1.0...v3.2.0) (2021-06-15)
+
+
+### Features
+
+* added k dep command to install same dependency in several projects quickly ([1368b7e](https://github.com/charbonnierg/kapla-cli/commit/1368b7e87a9ee23f305eeddd762e63f627232d2a))
+
+
+### Bug Fixes
+
+* bumped dependencies ([089e131](https://github.com/charbonnierg/kapla-cli/commit/089e1311cf5fb4fff863cba1158e8cdbe490b53c))
+* fix typechecking errors using type: ignore statements ([8723edb](https://github.com/charbonnierg/kapla-cli/commit/8723edb3f04468bf9c4019ad1f1011f17efdfbc7))
+
 ## [3.2.0-rc.3](https://github.com/charbonnierg/kapla-cli/compare/v3.2.0-rc.2...v3.2.0-rc.3) (2021-06-15)
 
 
