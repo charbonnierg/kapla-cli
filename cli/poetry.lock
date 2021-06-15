@@ -312,7 +312,7 @@ i18n = ["Babel (>=0.8)"]
 
 [[package]]
 name = "kapla-cli-core"
-version = "3.2.0"
+version = "3.3.0-rc.1"
 description = ""
 category = "main"
 optional = false
@@ -842,7 +842,7 @@ python-versions = "*"
 
 [[package]]
 name = "types-pyyaml"
-version = "5.4.0"
+version = "5.4.1"
 description = "Typing stubs for PyYAML"
 category = "main"
 optional = false
@@ -929,7 +929,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pyt
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "05e5b721f0f87c8f788fbd84959734a8e77d3d5a78ba04caa61ed29ad6606cea"
+content-hash = "8a4f28bdf39a64255961990998a2074b44c4cd6fdf081d37ba9fefca923d6f8d"
 
 [metadata.files]
 appdirs = [
@@ -1505,7 +1505,7 @@ types-pkg-resources = [
     {file = "types_pkg_resources-0.1.2-py2.py3-none-any.whl", hash = "sha256:42d640500de564f1ccc21f918117afadf78039e4fa7f513c647ccf742d609aeb"},
 ]
 types-pyyaml = [
-    {file = "types_PyYAML-5.4.0-py2.py3-none-any.whl", hash = "sha256:aa65d32ad13fe67bf1ffb08b03056406fce82b1195dab3aa528e0ccb830b9a6f"},
+    {file = "types_PyYAML-5.4.1-py2.py3-none-any.whl", hash = "sha256:88c0c5bcb2656a7da25f0ed5a7cfa557edb8191a7f7a71b3aaabd799792c5321"},
 ]
 typing-extensions = [
     {file = "typing_extensions-3.10.0.0-py2-none-any.whl", hash = "sha256:0ac0f89795dd19de6b97debb0c6af1c70987fd80a2d62d1958f7e56fcc31b497"},
