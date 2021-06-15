@@ -44,7 +44,7 @@ class Project:
         self.pyproject_content = self.pyproject_file.read_text()
         # If file content is not valid, a ValidationError is
         self._pyproject = parse(self.pyproject_content)
-        self.pyproject = Pyproject(**self._pyproject["tool"]["poetry"])
+        self.pyproject = Pyproject(**self._pyproject["tool"]["poetry"])  # type: ignore
 
     def __repr__(self) -> str:
         return f"Project(name={self.pyproject.name}, root={self.root})"
@@ -322,24 +322,24 @@ class Project:
             run(cmd)
 
     def set_version(self, value: str) -> None:
-        self._pyproject["tool"]["poetry"]["version"] = value
-        self.pyproject = Pyproject.construct(**self._pyproject["tool"]["poetry"])
+        self._pyproject["tool"]["poetry"]["version"] = value  # type: ignore
+        self.pyproject = Pyproject.construct(**self._pyproject["tool"]["poetry"])  # type: ignore
         self.pyproject_content = dumps(self._pyproject)
         self.pyproject_file.write_text(self.pyproject_content)
 
     def set_authors(self, values: List[str]) -> None:
-        self._pyproject["tool"]["poetry"]["authors"] = [
+        self._pyproject["tool"]["poetry"]["authors"] = [  # type: ignore
             value.lower() for value in values
         ]
-        self.pyproject = Pyproject.construct(**self._pyproject["tool"]["poetry"])
+        self.pyproject = Pyproject.construct(**self._pyproject["tool"]["poetry"])  # type: ignore
         self.pyproject_content = dumps(self._pyproject)
         self.pyproject_file.write_text(self.pyproject_content)
 
     def set_include_packages(self, values: List[str]) -> None:
-        self._pyproject["tool"]["poetry"]["packages"] = [
+        self._pyproject["tool"]["poetry"]["packages"] = [  # type: ignore
             {"include": value} for value in values
         ]
-        self.pyproject = Pyproject.construct(**self._pyproject["tool"]["poetry"])
+        self.pyproject = Pyproject.construct(**self._pyproject["tool"]["poetry"])  # type: ignore
         self.pyproject_content = dumps(self._pyproject)
         self.pyproject_file.write_text(self.pyproject_content)
 
@@ -351,7 +351,7 @@ class Project:
         for key, value in new_deps.items():
             if isinstance(value, Dependency):
                 new_deps[key] = value.dict(exclude_unset=True)
-        self._pyproject["tool"]["poetry"]["dependencies"] = new_deps
+        self._pyproject["tool"]["poetry"]["dependencies"] = new_deps  # type: ignore
         self.pyproject_content = dumps(self._pyproject)
         self.pyproject_file.write_text(self.pyproject_content)
 
