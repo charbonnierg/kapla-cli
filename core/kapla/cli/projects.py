@@ -404,8 +404,17 @@ class Monorepo(Project):
         return [self.projects[package] for package in packages]
 
     def install_packages(
-        self, packages: List[str] = [], extras: List[str] = [], skip: List[str] = []
+        self,
+        packages: Optional[List[str]] = None,
+        extras: Optional[List[str]] = None,
+        skip: Optional[List[str]] = None,
     ) -> None:
+        if packages is None:
+            packages = []
+        if extras is None:
+            extras = []
+        if skip is None:
+            skip = []
         projects = self.get_packages(packages)
         for project in projects:
             for dep in project.private_dependencies:
@@ -483,7 +492,8 @@ class Monorepo(Project):
                 continue
             project.format()
 
-    def update_packages(self, packages: List[str] = []) -> None:
+    def update_packages(self, packages: Optional[List[str]] = None) -> None:
+        packages = packages or []
         for project in self.get_packages(packages):
             project.update()
 
@@ -500,46 +510,50 @@ class Monorepo(Project):
         self._new_project(name, "plugins")
 
     def new_app(self, name: str) -> None:
-        self._new_project(name, "applications")
+        self._new_project(name, "applications", sources_parent="apps")
 
-    def _new_project(self, name: str, folder: str) -> None:
-        # Simply replace name for the moment
-        name = name.replace("-", "_").replace(" ", "_")
-        # Create project directory
+    def _new_project(
+        self, name: str, folder: str, sources_parent: Optional[str] = None
+    ) -> None:
+        # Declare variable type
+        to_include: Optional[str]
+        # Create project directory. Dash character is allowed in project directory name
         project_root = self.root / folder / name
         project_root.mkdir(parents=True, exist_ok=True)
-        # Create pyproject.toml
-        with current_directory(project_root):
-            run(f"poetry init -n --name {quote(name)}")
+        # Convert dash to underscores for python package names
+        package_name = name.replace("-", "_")
+        # Relevant only when using a prefix in project configuration
+        if self.config.prefix:
+            sources_root = project_root / self.config.prefix.replace("-", "_")
+            to_include = self.config.prefix.replace("-", "_")
+            if package_name.startswith(self.config.prefix + "_"):
+                package_name = package_name[len(self.config.prefix) + 1 :]
+        else:
+            to_include = None
+        if sources_parent:
+            sources_dir = sources_root / sources_parent / package_name
+        else:
+            sources_dir = sources_root / package_name
+        # Bootstrap source directory
+        sources_dir.mkdir(parents=True, exist_ok=False)
+        init_file = sources_dir / "__init__.py"
+        init_file.touch()
         # Bootstrap test directory
         project_tests = project_root / "tests"
         project_tests.mkdir(exist_ok=False, parents=False)
         conftest = project_tests / "conftest.py"
         conftest.touch()
+        # Create pyproject.toml
+        with current_directory(project_root):
+            run(f"poetry init -n --name {name}")
         # Bootstrap source directory
-        if self.config.prefix:
-            sources_dir = (
-                project_root
-                / self.config.prefix.replace("-", "_")
-                / name.replace(f"{self.config.prefix}-", "").replace("-", "_")
-            )
-        else:
-            sources_dir = project_root / name.replace("-", "_")
-        if sources_dir.name in stdlib_list():
+        if package_name in stdlib_list():
             console.print(
-                f"Warning: Generated module with name {sources_dir}. "
-                f"The {sources_dir} module already exists in the standard library.",
+                f"Warning: Generated module with name {package_name}. "
+                f"The {package_name} module already exists in the standard library. "
+                "You're gonna have a bad time.",
                 style="yellow",
             )
-        # Declare variable type
-        to_include: Optional[str]
-        if self.config.prefix:
-            to_include = self.config.prefix.replace("-", "_")
-        else:
-            to_include = None
-        sources_dir.mkdir(parents=True, exist_ok=False)
-        init_file = sources_dir / "__init__.py"
-        init_file.touch()
         # Create project instance
         project = Project(project_root)
         # Update project version
