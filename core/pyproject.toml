@@ -14,6 +14,8 @@ tomlkit = "^0.7.2"
 stdlib-list = "^0.8.0"
 python-on-whales = "^0.20.0"
 rich = "^10.3.0"
+types-pkg-resources = "^0.1.2"
+types-PyYAML = "^5.4.0"
 
 [tool.poetry.dev-dependencies]
 colorama = "^0.4.4"
