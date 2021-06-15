@@ -1,3 +1,16 @@
+## [3.3.0](https://github.com/charbonnierg/kapla-cli/compare/v3.2.0...v3.3.0) (2021-06-15)
+
+
+### Features
+
+* added list command ([98d3b32](https://github.com/charbonnierg/kapla-cli/commit/98d3b32c55de6b65e2dc1dedb6a27f08bedb5e99))
+
+
+### Bug Fixes
+
+* create new apps, libraries and plugins handle prefix usage ([535b40a](https://github.com/charbonnierg/kapla-cli/commit/535b40a0b43080693b338341a6a77c85c9bda6d2))
+* fix k install which was broken in last commit ([25e906c](https://github.com/charbonnierg/kapla-cli/commit/25e906ce9de0e75c7c25eba91d2db3815e9e28cd))
+
 ## [3.3.0-rc.3](https://github.com/charbonnierg/kapla-cli/compare/v3.3.0-rc.2...v3.3.0-rc.3) (2021-06-15)
 
 
