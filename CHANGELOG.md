@@ -1,3 +1,10 @@
+## [3.3.0-rc.3](https://github.com/charbonnierg/kapla-cli/compare/v3.3.0-rc.2...v3.3.0-rc.3) (2021-06-15)
+
+
+### Bug Fixes
+
+* fix k install which was broken in last commit ([fde2dd3](https://github.com/charbonnierg/kapla-cli/commit/fde2dd3e73bc74505d2a46b9709b223b3b7c6b67))
+
 ## [3.3.0-rc.2](https://github.com/charbonnierg/kapla-cli/compare/v3.3.0-rc.1...v3.3.0-rc.2) (2021-06-15)
 
 
