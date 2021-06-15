@@ -1,3 +1,10 @@
+## [3.3.0-rc.2](https://github.com/charbonnierg/kapla-cli/compare/v3.3.0-rc.1...v3.3.0-rc.2) (2021-06-15)
+
+
+### Bug Fixes
+
+* create new apps, libraries and plugins handle prefix usage ([3564a2e](https://github.com/charbonnierg/kapla-cli/commit/3564a2e46a40fef1123fd494b96842a6f26c685b))
+
 ## [3.3.0-rc.1](https://github.com/charbonnierg/kapla-cli/compare/v3.2.0...v3.3.0-rc.1) (2021-06-15)
 
 
