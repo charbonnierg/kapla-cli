@@ -1,7 +1,10 @@
+from pathlib import Path
 from typing import List, Optional
 
 import typer
+from rich.table import Table
 
+from kapla.cli.console import console
 from kapla.cli.globals import repo
 from kapla.cli.utils import current_directory, run
 
@@ -14,6 +17,26 @@ app = typer.Typer(
 )
 
 
+@app.command("list")
+def list(
+    filter: Optional[str] = typer.Option(
+        None, help="Optional string to use as filter when looking for package names"
+    )
+) -> None:
+    """List packages in the monorepo"""
+    projects = Table(title="Projects")
+    projects.add_column("Name")
+    projects.add_column("Directory")
+    projects.add_column("Description")
+    for project in repo.get_packages():
+        projects.add_row(
+            project.pyproject.name,
+            str(project.root.relative_to(Path.cwd())),
+            project.pyproject.description,
+        )
+    console.print(projects)
+
+
 @app.command("build")
 def build(
     format: Optional[str] = None,
@@ -24,7 +47,6 @@ def build(
 ) -> None:
     """Build all or some packages using poetry."""
     packages = [pkg for pkg in package if pkg not in (skip or [])] if package else []
-    print(packages)
     repo.build_packages(packages, format)
 
 
@@ -42,8 +64,7 @@ def test(
     ),
 ) -> None:
     """Run unit tests using pytest."""
-    packages = list(package or [])
-    repo.test_packages(packages, markers=markers, exprs=exprs)
+    repo.test_packages(package, markers=markers, exprs=exprs)
 
 
 @app.command("bump")
@@ -61,8 +82,10 @@ def lint(
     package: Optional[List[str]] = typer.Argument(default=None),
 ) -> None:
     """Lint all source code using flake8."""
-    packages = list(package or [])
-    repo.lint_packages(packages)
+    if package:
+        repo.lint_packages(package)
+    else:
+        repo.lint_packages()
 
 
 @app.command("typecheck")
@@ -70,8 +93,7 @@ def typecheck(
     package: Optional[List[str]] = typer.Argument(default=None),
 ) -> None:
     """Run mypy typechecking againt all source code."""
-    packages = list(package or [])
-    repo.typecheck_packages(packages)
+    repo.typecheck_packages(package)
 
 
 @app.command("format")
@@ -79,8 +101,7 @@ def format(
     package: Optional[List[str]] = typer.Argument(default=None),
 ) -> None:
     """Format all source code using black."""
-    packages = list(package or [])
-    repo.format_packages(packages)
+    repo.format_packages(package)
 
 
 @app.command("install")
@@ -89,9 +110,9 @@ def install(
     skip: Optional[List[str]] = typer.Option(None, "--skip", "-s"),
 ) -> None:
     """Install all packages in editable mode and development dependencies."""
-    packages = list(package or [])
-    skip = list(skip or [])
-    repo.install_packages(packages, skip=skip)
+    if skip is None:
+        skip = []
+    repo.install_packages(package, skip=skip)
 
 
 @app.command("clean")
@@ -99,15 +120,13 @@ def clean(
     package: Optional[List[str]] = typer.Argument(default=None), dist: bool = True
 ) -> None:
     """Clean directories."""
-    packages = list(package or [])
-    repo.clean_packages(packages, no_dist=not dist)
+    repo.clean_packages(package, no_dist=not dist)
 
 
 @app.command("update")
 def update(package: Optional[List[str]] = typer.Argument(default=None)) -> None:
     """Update all packages dependencies and generate lock file."""
-    packages = list(package or [])
-    repo.update_packages(packages)
+    repo.update_packages(package)
 
 
 @app.command("export")
@@ -115,11 +134,8 @@ def export(
     package: Optional[List[str]] = typer.Argument(default=None),
 ) -> None:
     """Export all packages for offline installation."""
-    if not package:
-        repo.export_packages()
-    else:
-        for project in repo.get_packages(list(package)):
-            project.export()
+    for project in repo.get_packages(package):
+        project.export()
 
 
 @app.command("coverage")
