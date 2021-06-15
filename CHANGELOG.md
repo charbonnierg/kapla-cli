@@ -1,3 +1,10 @@
+## [3.3.0-rc.1](https://github.com/charbonnierg/kapla-cli/compare/v3.2.0...v3.3.0-rc.1) (2021-06-15)
+
+
+### Features
+
+* added list command ([33e666a](https://github.com/charbonnierg/kapla-cli/commit/33e666a1298ff62587e40da46e05ccd7bbd7dd0b))
+
 ## [3.2.0](https://github.com/charbonnierg/kapla-cli/compare/v3.1.0...v3.2.0) (2021-06-15)
 
 
