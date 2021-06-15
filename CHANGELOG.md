@@ -1,3 +1,10 @@
+## [3.2.0-rc.2](https://github.com/charbonnierg/kapla-cli/compare/v3.2.0-rc.1...v3.2.0-rc.2) (2021-06-15)
+
+
+### Bug Fixes
+
+* bumped dependencies ([fb20a95](https://github.com/charbonnierg/kapla-cli/commit/fb20a95acc6dfc1b7e2fc152a9d3a6582570a94a))
+
 ## [3.2.0-rc.1](https://github.com/charbonnierg/kapla-cli/compare/v3.1.0...v3.2.0-rc.1) (2021-04-22)
 
 
