@@ -396,6 +396,8 @@ class Monorepo(Project):
         """Get a subset of packages from name."""
         if not packages:
             return self._projects
+        if not isinstance(packages, list):
+            packages = list(packages)
         unknown = [name for name in packages if name not in self.project_names]
         if len(unknown) > 1:
             raise PackageNotFoundError(f"Cannot find packages: {', '.join(unknown)}")
@@ -411,10 +413,13 @@ class Monorepo(Project):
     ) -> None:
         if packages is None:
             packages = []
+        packages = list(packages)
         if extras is None:
             extras = []
+        extras = list(extras)
         if skip is None:
             skip = []
+        skip = list(skip)
         projects = self.get_packages(packages)
         for project in projects:
             for dep in project.private_dependencies:
