@@ -1,3 +1,10 @@
+## [3.2.0-rc.3](https://github.com/charbonnierg/kapla-cli/compare/v3.2.0-rc.2...v3.2.0-rc.3) (2021-06-15)
+
+
+### Bug Fixes
+
+* fix typechecking errors using type: ignore statements ([7e12e1d](https://github.com/charbonnierg/kapla-cli/commit/7e12e1dff35277d1df9c9ae2d12b63dda2af72c7))
+
 ## [3.2.0-rc.2](https://github.com/charbonnierg/kapla-cli/compare/v3.2.0-rc.1...v3.2.0-rc.2) (2021-06-15)
 
 
