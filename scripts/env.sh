@@ -11,6 +11,7 @@ function createVenv {
   if [ ! -d ".venv/" ]; then
     echo -e "Creating virtual environment in $ROOT/.venv directory"
     $PYTHON -m venv .venv
+    .venv/bin/python -m pip install -U setuptools wheel pip
   fi
   cd -
 }
