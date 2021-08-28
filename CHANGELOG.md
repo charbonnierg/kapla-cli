@@ -1,3 +1,10 @@
+## [3.4.0](https://github.com/charbonnierg/kapla-cli/compare/v3.3.0...v3.4.0) (2021-08-28)
+
+
+### Features
+
+* bump dependencies (mypy, flake8, black, isort, precommit) ([#6](https://github.com/charbonnierg/kapla-cli/issues/6)) and support python3.7 ([01743ff](https://github.com/charbonnierg/kapla-cli/commit/01743ffa5dcf8472d55d9ba80b70eb5a902796b1))
+
 ## [3.4.0-rc.1](https://github.com/charbonnierg/kapla-cli/compare/v3.3.0...v3.4.0-rc.1) (2021-08-28)
 
 
