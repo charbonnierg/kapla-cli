@@ -6,7 +6,7 @@ authors = ["Guillaume Charbonnier <guillaume.charbonnier@araymond.com>"]
 packages = [{ include = "kapla" }]
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = ">=3.7,<4.0"
 typer = "^0.3.2"
 loguru = "^0.5.3"
 pydantic = "^1.8.2"
