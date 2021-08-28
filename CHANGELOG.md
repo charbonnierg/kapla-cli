@@ -1,3 +1,10 @@
+## [3.4.0-rc.1](https://github.com/charbonnierg/kapla-cli/compare/v3.3.0...v3.4.0-rc.1) (2021-08-28)
+
+
+### Features
+
+* bumped dependencies ([07e08a6](https://github.com/charbonnierg/kapla-cli/commit/07e08a64fe208b92bb5037f20a7ed87b3841fe62))
+
 ## [3.3.0](https://github.com/charbonnierg/kapla-cli/compare/v3.2.0...v3.3.0) (2021-06-15)
 
 
