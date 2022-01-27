@@ -6,7 +6,6 @@ from shlex import quote
 from typing import Iterator
 
 import typer
-
 from kapla.cli.console import console, style_str
 from kapla.cli.utils import run
 

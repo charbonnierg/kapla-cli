@@ -1,7 +1,6 @@
 import pathlib
 
 import pytest
-
 from kapla.cli.projects import Monorepo, Project
 
 

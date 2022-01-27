@@ -3,7 +3,6 @@ from shlex import quote
 from typing import Optional
 
 import typer
-
 from kapla.cli.console import console
 from kapla.cli.utils import run
 

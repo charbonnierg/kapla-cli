@@ -4,11 +4,10 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
+from kapla.cli.utils import current_directory
 from loguru import logger
 from pydantic import BaseModel, DirectoryPath, FilePath, ValidationError
 from yaml import SafeLoader, load
-
-from kapla.cli.utils import current_directory
 
 
 class Architecture(str, Enum):

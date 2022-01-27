@@ -1,7 +1,6 @@
 from typing import List, Optional
 
 import typer
-
 from kapla.cli.globals import repo
 
 app = typer.Typer(
