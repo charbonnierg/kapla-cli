@@ -1,9 +1,8 @@
 from typing import Callable, Generator
 
 import pytest
-from typer.testing import Result
-
 from kapla.cli.app import app
+from typer.testing import Result
 
 K = Callable[..., Result]
 

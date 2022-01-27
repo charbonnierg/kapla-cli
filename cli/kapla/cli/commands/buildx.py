@@ -3,14 +3,13 @@ from pathlib import Path
 from sys import exit
 from typing import List, Optional, Union
 
+from kapla.cli.console import console, style_str
+from kapla.cli.utils import map_string_to_dict
+from kapla.docker.datatypes import BuildContext, Catalog, Image
 from loguru import logger
 from pydantic.error_wrappers import ValidationError
 from python_on_whales import docker
 from typer import Argument, Context, Option, Typer
-
-from kapla.cli.console import console, style_str
-from kapla.cli.utils import map_string_to_dict
-from kapla.docker.datatypes import BuildContext, Catalog, Image
 
 app = Typer(
     name="builder",

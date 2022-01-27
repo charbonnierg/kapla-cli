@@ -2,11 +2,10 @@ from pathlib import Path
 from typing import List, Optional
 
 import typer
-from rich.table import Table
-
 from kapla.cli.console import console
 from kapla.cli.globals import repo
 from kapla.cli.utils import current_directory, run
+from rich.table import Table
 
 app = typer.Typer(
     name="k",

@@ -2,7 +2,6 @@ from typing import Optional
 
 import pkg_resources
 import typer
-
 from kapla.cli.console import console
 
 from .commands.base import app
